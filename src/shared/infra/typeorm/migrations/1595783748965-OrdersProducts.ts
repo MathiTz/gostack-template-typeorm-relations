@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export default class Orders1595722750067 implements MigrationInterface {
+export default class OrdersProducts1595783748965 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'orders',
+        name: 'orders_products',
         columns: [
           {
             name: 'id',
@@ -14,8 +14,22 @@ export default class Orders1595722750067 implements MigrationInterface {
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'customer_id',
+            name: 'order_id',
             type: 'uuid',
+          },
+          {
+            name: 'product_id',
+            type: 'uuid',
+          },
+          {
+            name: 'price',
+            type: 'numeric',
+            precision: 10,
+            scale: 2,
+          },
+          {
+            name: 'quantity',
+            type: 'integer',
           },
           {
             name: 'created_at',
@@ -30,9 +44,17 @@ export default class Orders1595722750067 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: 'ForeignCustomer',
-            columnNames: ['customer_id'],
-            referencedTableName: 'customers',
+            name: 'ForeignOrder',
+            columnNames: ['order_id'],
+            referencedTableName: 'orders',
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
+          },
+          {
+            name: 'ForeignProduct',
+            columnNames: ['product_id'],
+            referencedTableName: 'products',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE',
@@ -43,6 +65,6 @@ export default class Orders1595722750067 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('orders');
+    await queryRunner.dropTable('orders_products');
   }
 }

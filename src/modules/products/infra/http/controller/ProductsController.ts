@@ -11,8 +11,6 @@ export default class ProductsController {
 
     const product = await createProduct.execute({ name, price, quantity });
 
-    delete product.id;
-
     return response.json(product);
     // TODO
   }

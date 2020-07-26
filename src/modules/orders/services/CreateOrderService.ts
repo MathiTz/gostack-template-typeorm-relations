@@ -34,18 +34,32 @@ class CreateOrderService {
     const customer = await this.customersRepository.findById(customer_id);
 
     if (!customer) {
-      throw new AppError('Customer not found', 400);
+      throw new AppError('Customer does not exists');
     }
 
-    const productsExist = await this.productsRepository.findAllById(products);
+    const productsIds = products.map(product => {
+      return { id: product.id };
+    });
 
-    if (!productsExist) {
-      throw new AppError('Theres a unexistent product', 400);
-    }
+    const productsData = await this.productsRepository.findAllById(productsIds);
+
+    const productsFinal = productsData.map(productData => {
+      const productFinal = products.find(
+        productFind => productFind.id === productData.id,
+      );
+
+      return {
+        product_id: productData.id,
+        price: productData.price,
+        quantity: productFinal?.quantity || 0,
+      };
+    });
+
+    await this.productsRepository.updateQuantity(products);
 
     const order = await this.ordersRepository.create({
       customer,
-      products,
+      products: productsFinal,
     });
 
     return order;
